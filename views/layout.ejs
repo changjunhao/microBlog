@@ -10,30 +10,23 @@
         padding-bottom: 40px;
       }
     </style>
-    <link rel='stylesheet' href='/stylesheets/bootstrap-responsive.css' />
+    <link rel='stylesheet' href='/stylesheets/bootstrap-theme.css' />
   </head>
   <body>
-    <div class="navbar navbar-fixed-top">
-      <div class="navbar-inner">
+    <div class="navbar navbar-default navbar-fixed-top" role="navigation">
         <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <a class="brand" href="/">Microblog</a>
-          <div class="nav-collapse">
-            <ul class="nav">
-              <li class="active"><a href="/">首页</a></li>
-              <% if(!locals.user) { %>
-              <li><a href="/login">登入</a></li>
-              <li><a href="/reg">注册</a></li>
+          <a class="navbar-brand" href="/">Microblog</a>
+          <div class="navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li id="nav" class="active"><a href="/">首页</a></li>
+              <% if(!user) { %>
+              <li id="nav"><a href="/login">登入</a></li>
+              <li id="nav"><a href="/reg">注册</a></li>
               <% }else { %>
               <li><a href="/logout">登出</a></li>
               <% } %>
             </ul>
           </div>
-        </div>
       </div>
     </div>
     <div id="container" class="container">
@@ -43,7 +36,7 @@
       </div>
       <% } %>
       <% if(locals.error) { %>
-      <div class="alert alert-error">
+      <div class="alert alert-danger">
         <%= locals.error %>
       </div>
       <% } %>
