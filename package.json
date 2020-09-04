@@ -19,7 +19,7 @@
     "express-partials": "~0.3.0",
     "express-session": "^1.15.3",
     "mongodb": "^3.1.13",
-    "morgan": "^1.8.2",
+    "morgan": "^1.9.1",
     "serve-favicon": "^2.4.3"
   },
   "devDependencies": {
