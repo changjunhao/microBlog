@@ -1,8 +1,10 @@
-let express = require('express')
+import express from 'express'
+import crypto from 'crypto'
+import User from '../models/user.mjs'
+import Post from '../models/post.mjs'
+
 let router = express.Router()
-let crypto = require('crypto')
-let User = require('../models/user.js')
-let Post = require('../models/post.js')
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   Post.get(null, function(err, posts) {
@@ -127,4 +129,4 @@ function checkNotLogin(req, res, next) {
   next()
 }
 
-module.exports = router
+export default router
