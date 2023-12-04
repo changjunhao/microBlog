@@ -18,7 +18,7 @@
     "express": "^4.17.3",
     "express-partials": "^0.3.0",
     "express-session": "^1.17.2",
-    "mongodb": "^4.4.1",
+    "mongodb": "^4.17.0",
     "morgan": "^1.10.0",
     "serve-favicon": "^2.5.0"
   },
