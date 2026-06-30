@@ -1,64 +1,60 @@
-import mongoClient from './db.mjs'
-import settings from '../settings.mjs'
+import { getDb } from './db.mjs'
 
-function Post(username, post, time) {
-  this.user = username
-  this.post = post
-  if (time) {
-    this.time = time
-  } else {
-    this.time = new Date()
-  }
-}
+/**
+ * @typedef {Object} PostDoc
+ * @property {string} user
+ * @property {string} post
+ * @property {Date} time
+ */
 
-Post.prototype.save = function save(callback) {
-  let post = {
-    user: this.user,
-    post: this.post,
-    time: this.time
+class Post {
+  /**
+   * @param {string} username
+   * @param {string} content
+   * @param {Date} [time]
+   */
+  constructor(username, content, time) {
+    this.user = username
+    this.post = content
+    this.time = time || new Date()
   }
-  mongoClient.connect(function(err, client) {
-    if (err) {
-      return callback(err)
-    }
-    const db = client.db(settings.db)
+
+  /**
+   * Save the post to the database.
+   * @returns {Promise<import('mongodb').InsertOneResult>}
+   */
+  async save() {
+    const db = await getDb()
     const collection = db.collection('posts')
-    collection.createIndex('user', function(err, post) {})
-    collection.insertOne(post, function(err, post) {
-      client.close()
-      callback(err, post)
+    await collection.createIndex({ user: 1 })
+    return collection.insertOne({
+      user: this.user,
+      post: this.post,
+      time: this.time
     })
-  })
-}
-Post.get = function get(username, callback) {
-  let query = {}
-  if (username) {
-    query.user = username
   }
-  mongoClient.connect(function(err, client) {
-    if (err) {
-      return callback(err)
-    }
-    const db = client.db(settings.db)
+
+  /**
+   * Get all posts, optionally filtered by username.
+   * @param {string} [username] - Filter by username. Omit for all posts.
+   * @returns {Promise<Post[]>}
+   */
+  static async findAll(username) {
+    const db = await getDb()
     const collection = db.collection('posts')
-    let query = {}
-    if (username) {
-      query.user = username
-    }
-    collection.find(query).sort({time: -1}).toArray(function(err, docs) {
-      client.close()
-      if (err) {
-        callback(err)
-      }
-      let posts = []
-      docs.forEach(function(doc, index) {
-        let post = new Post(doc.user, doc.post, doc.time)
-        posts.push(post)
-      })
-      console.log(posts)
-      callback(null, posts)
-    })
-  })
+    const query = username ? { user: username } : {}
+    const docs = await collection.find(query).sort({ time: -1 }).toArray()
+    return docs.map(doc => new Post(doc.user, doc.post, doc.time))
+  }
+
+  /**
+   * Get posts by a specific user.
+   * @param {string} username
+   * @returns {Promise<Post[]>}
+   */
+  static async findByUser(username) {
+    return Post.findAll(username)
+  }
 }
 
 export default Post

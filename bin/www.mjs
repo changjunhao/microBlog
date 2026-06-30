@@ -28,6 +28,25 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+// ── Graceful shutdown ──
+async function gracefulShutdown(signal) {
+  debug(`Received ${signal}, shutting down gracefully...`)
+  const { closeConnection } = await import('../models/db.mjs')
+  await closeConnection()
+  server.close(() => {
+    debug('HTTP server closed')
+    process.exit(0)
+  })
+  // Force exit after 10s
+  setTimeout(() => {
+    console.error('Forced shutdown after timeout')
+    process.exit(1)
+  }, 10000)
+}
+
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+
 /**
  * Normalize a port into a number, string, or false.
  */
